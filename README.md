@@ -2,26 +2,59 @@
 Munin Plugins for MongoDB
 ============
 
-[http://docs.mongodb.org/manual/reference/server-status/](http://docs.mongodb.org/manual/reference/server-status/)
-
 Plugins
 ----------
-* mongo_ops          : operations/second
-* mongo_mem          : mapped, virtual and resident memory usage
-* mongo_btree        : btree access/misses/etc...
-* mongo_conn         : current connections
-* mongo_lock         : write lock info
-* mongo_primary      : Current primary member ID
-* mongo_replication  : Seconds behind master on replSet
+* mongo_ops   : operations/second
+* mongo_mem   : mapped, virtual and resident memory usage
+* mongo_btree : btree access/misses/etc...
+* mongo_conn  : current connections
+* mongo_lock  : write lock info
+* mongo_docs  : number of documents (inserted, updated...)
 
 Requirements
 -----------
-* simplejson or python >= 2.6
-* MongoDB 1.4+ 
+* MongoDB 2.4+
+* python/pymongo
 
-Usage
+Installation (ubuntu)
+------------
+
+**Install pymongo:**
+
+    sudo apt-get install pip
+    sudo apt-get install build-essential python-dev
+    sudo pip install pymongo
+
+**Install plugins**
+
+    git clone https://github.com/comerford/mongo-munin.git /tmp/mongo-munin
+    sudo cp /tmp/mongo-munin/mongo_* /usr/share/munin/plugins
+    sudo ln -sf /usr/share/munin/plugins/mongo_btree /etc/munin/plugins/mongo_btree
+    sudo ln -sf /usr/share/munin/plugins/mongo_conn /etc/munin/plugins/mongo_conn
+    sudo ln -sf /usr/share/munin/plugins/mongo_lock /etc/munin/plugins/mongo_lock
+    sudo ln -sf /usr/share/munin/plugins/mongo_mem /etc/munin/plugins/mongo_mem
+    sudo ln -sf /usr/share/munin/plugins/mongo_ops /etc/munin/plugins/mongo_ops
+    sudo ln -sf /usr/share/munin/plugins/mongo_docs /etc/munin/plugins/mongo_docs
+    sudo chmod +x /usr/share/munin/plugins/mongo_*
+    sudo service munin-node restart
+
+Check if plugins are running:
+
+    munin-node-configure | grep "mongo_"
+
+Test plugin output:
+
+    munin-run mongo_ops
+
+Configuration
 -----------
-You can set HOST and PORT for the REST interface in the plugin config.
-If you don't, they will default to 127.0.0.1 and 28017 - that should work for
-local checks on a default install.
+
+**how to configure custom db connection**
+
+munin-node can set env value in below file:
+
+`/etc/munin/plugin-conf.d/munin-node`
+
+    [mongo_*]
+    env.MONGO_DB_URI mongodb://user:password@host:port/dbname
 
